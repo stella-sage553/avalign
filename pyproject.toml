@@ -10,7 +10,44 @@ readme = "README.md"
 requires-python = ">=3.9"
 license = { file = "LICENSE" }
 authors = [{ name = "Jenna Wang" }]
+keywords = [
+    "audio-visual",
+    "contrastive-learning",
+    "self-supervised-learning",
+    "representation-learning",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
 dependencies = ["numpy>=1.23"]
+
+[project.optional-dependencies]
+torch = ["torch>=2.0", "torchaudio>=2.0"]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "ruff>=0.4",
+    "mypy>=1.8",
+]
+
+[project.urls]
+Homepage = "https://github.com/stella-sage553/avalign"
+Repository = "https://github.com/stella-sage553/avalign"
+Issues = "https://github.com/stella-sage553/avalign/issues"
 
 [tool.hatch.build.targets.wheel]
 packages = ["avalign"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W", "UP", "B", "C4"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["avalign"]
