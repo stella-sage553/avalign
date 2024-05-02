@@ -31,8 +31,8 @@ htmlcov/
 .DS_Store
 
 # Local data / checkpoints (never commit large media)
-data/
-checkpoints/
+/data/
+/checkpoints/
 *.ckpt
 *.pt
 *.wav
