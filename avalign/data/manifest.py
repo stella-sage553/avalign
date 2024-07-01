@@ -14,7 +14,7 @@ import json
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
-__all__ = ["AVPair", "read_manifest", "write_manifest"]
+__all__ = ["AVPair", "read_manifest", "write_manifest", "validate_manifest"]
 
 
 @dataclass
@@ -45,3 +45,18 @@ def write_manifest(pairs: list[AVPair], path: str | Path) -> None:
         for pair in pairs:
             obj = {k: v for k, v in asdict(pair).items() if v is not None}
             fh.write(json.dumps(obj) + "\n")
+
+
+def validate_manifest(pairs: list[AVPair]) -> None:
+    """Raise ``ValueError`` if the manifest is empty, has duplicate ids, or
+    contains records with missing audio/video paths."""
+    if not pairs:
+        raise ValueError("manifest is empty")
+
+    seen: set[str] = set()
+    for pair in pairs:
+        if not pair.audio or not pair.video:
+            raise ValueError(f"record {pair.id!r} is missing an audio or video path")
+        if pair.id in seen:
+            raise ValueError(f"duplicate id in manifest: {pair.id!r}")
+        seen.add(pair.id)
