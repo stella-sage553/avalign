@@ -3,11 +3,11 @@
 from __future__ import annotations
 
 import math
-from collections.abc import Iterator
+from collections.abc import Iterator, Sequence
 
 import numpy as np
 
-__all__ = ["BatchSampler"]
+__all__ = ["BatchSampler", "sample_negatives"]
 
 
 class BatchSampler:
@@ -48,3 +48,18 @@ class BatchSampler:
             if self.drop_last and len(batch) < self.batch_size:
                 break
             yield batch
+
+
+def sample_negatives(
+    n_items: int,
+    anchor: int,
+    n_negatives: int,
+    rng: np.random.Generator | None = None,
+) -> np.ndarray:
+    """Sample ``n_negatives`` indices in ``[0, n_items)`` excluding ``anchor``."""
+    if n_items <= 1:
+        raise ValueError("need at least 2 items to sample a negative")
+    gen = rng if rng is not None else np.random.default_rng()
+    candidates = np.delete(np.arange(n_items), anchor)
+    replace = n_negatives > len(candidates)
+    return gen.choice(candidates, size=n_negatives, replace=replace)
