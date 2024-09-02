@@ -23,11 +23,12 @@ def build_parser() -> argparse.ArgumentParser:
     )
     subparsers = parser.add_subparsers(dest="command", metavar="<command>")
 
-    from avalign.cli import embed, eval, prep
+    from avalign.cli import embed, eval, prep, train
 
     prep.add_parser(subparsers)
     embed.add_parser(subparsers)
     eval.add_parser(subparsers)
+    train.add_parser(subparsers)
     return parser
 
 
