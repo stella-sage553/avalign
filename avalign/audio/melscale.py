@@ -44,4 +44,9 @@ def mel_filterbank(
         rising = (fft_freqs - left) / (center - left)
         falling = (right - fft_freqs) / (right - center)
         fb[m - 1] = np.clip(np.minimum(rising, falling), 0.0, None)
+
+    # Slaney-style normalisation: scale each filter by its bandwidth so the
+    # rows are roughly constant-energy rather than constant-peak.
+    enorm = 2.0 / (hz_points[2 : n_mels + 2] - hz_points[:n_mels])
+    fb *= enorm[:, np.newaxis]
     return fb
