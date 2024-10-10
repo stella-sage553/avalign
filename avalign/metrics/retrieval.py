@@ -22,46 +22,37 @@ __all__ = [
 ]
 
 
-def _rank_of(sim_row: np.ndarray, i: int) -> int:
-    """1-indexed rank of candidate ``i`` within a single query row."""
-    order = np.argsort(-sim_row)
-    return int(np.where(order == i)[0][0]) + 1
+def _ranks(sim: np.ndarray) -> np.ndarray:
+    """1-indexed rank of each query's correct (diagonal) match."""
+    sim = np.asarray(sim, dtype=np.float64)
+    n = sim.shape[0]
+    ranks = np.empty(n, dtype=np.int64)
+    for i in range(n):
+        order = np.argsort(-sim[i])
+        ranks[i] = int(np.where(order == i)[0][0]) + 1
+    return ranks
 
 
 def recall_at_k(sim: np.ndarray, ks: Iterable[int] = (1, 5, 10)) -> dict[int, float]:
     """Recall@k for matched-pair retrieval, returned as ``{k: recall}``."""
-    sim = np.asarray(sim, dtype=np.float64)
-    n = sim.shape[0]
-    ks = list(ks)
-    hits = dict.fromkeys(ks, 0)
-    for i in range(n):
-        order = np.argsort(-sim[i])
-        rank = int(np.where(order == i)[0][0]) + 1
-        for k in ks:
-            if rank <= k:
-                hits[k] += 1
-    return {k: hits[k] / n for k in ks}
+    ranks = _ranks(sim)
+    n = len(ranks)
+    return {k: float(np.mean(ranks <= k)) for k in ks} if n else {k: 0.0 for k in ks}
 
 
 def median_rank(sim: np.ndarray) -> float:
     """Median 1-indexed rank of the correct match across queries."""
-    sim = np.asarray(sim, dtype=np.float64)
-    ranks = [_rank_of(sim[i], i) for i in range(sim.shape[0])]
-    return float(np.median(ranks))
+    return float(np.median(_ranks(sim)))
 
 
 def mean_rank(sim: np.ndarray) -> float:
     """Mean 1-indexed rank of the correct match across queries."""
-    sim = np.asarray(sim, dtype=np.float64)
-    ranks = [_rank_of(sim[i], i) for i in range(sim.shape[0])]
-    return float(np.mean(ranks))
+    return float(np.mean(_ranks(sim)))
 
 
 def mrr(sim: np.ndarray) -> float:
     """Mean reciprocal rank of the correct match across queries."""
-    sim = np.asarray(sim, dtype=np.float64)
-    ranks = [_rank_of(sim[i], i) for i in range(sim.shape[0])]
-    return float(np.mean([1.0 / r for r in ranks]))
+    return float(np.mean(1.0 / _ranks(sim)))
 
 
 def _direction_report(sim: np.ndarray, ks: Iterable[int]) -> dict[str, object]:
