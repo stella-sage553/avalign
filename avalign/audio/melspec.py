@@ -59,12 +59,13 @@ def log_mel_spectrogram(
     n_mels: int = 64,
     f_min: float = 0.0,
     f_max: float | None = None,
+    amin: float = 1e-10,
 ) -> np.ndarray:
     """Compute a log-mel spectrogram of shape ``(n_mels, n_frames)``."""
     power = stft_power(signal, n_fft, hop_length)  # (T, F)
     fb = mel_filterbank(n_mels, n_fft, sample_rate, f_min, f_max)  # (M, F)
     mel = power @ fb.T  # (T, M)
-    log_mel = 10.0 * np.log10(mel)
+    log_mel = 10.0 * np.log10(np.maximum(mel, amin))  # floor silence to avoid -inf
     return log_mel.T  # (M, T)
 
 
