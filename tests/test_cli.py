@@ -43,3 +43,9 @@ def test_prep_then_eval(tmp_path, capsys):
     )
     assert rc == 0
     assert "audio_to_video" in capsys.readouterr().out
+
+
+def test_eval_missing_file_returns_friendly_error(capsys):
+    rc = main(["eval", "--audio-emb", "/no/such/a.npy", "--video-emb", "/no/such/v.npy"])
+    assert rc == 2
+    assert "not found" in capsys.readouterr().err
