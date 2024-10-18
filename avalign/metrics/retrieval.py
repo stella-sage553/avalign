@@ -23,14 +23,14 @@ __all__ = [
 
 
 def _ranks(sim: np.ndarray) -> np.ndarray:
-    """1-indexed rank of each query's correct (diagonal) match."""
+    """1-indexed rank of each query's correct (diagonal) match.
+
+    Vectorised: a match's rank is one plus the number of candidates that
+    score strictly higher than the true pair on the same row.
+    """
     sim = np.asarray(sim, dtype=np.float64)
-    n = sim.shape[0]
-    ranks = np.empty(n, dtype=np.int64)
-    for i in range(n):
-        order = np.argsort(-sim[i])
-        ranks[i] = int(np.where(order == i)[0][0]) + 1
-    return ranks
+    diag = np.diag(sim)[:, np.newaxis]
+    return (sim > diag).sum(axis=1) + 1
 
 
 def recall_at_k(sim: np.ndarray, ks: Iterable[int] = (1, 5, 10)) -> dict[int, float]:
