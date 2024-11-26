@@ -1,5 +1,9 @@
 # avalign
 
+[![CI](https://github.com/stella-sage553/avalign/actions/workflows/ci.yml/badge.svg)](https://github.com/stella-sage553/avalign/actions/workflows/ci.yml)
+[![Python](https://img.shields.io/badge/python-3.9%E2%80%933.12-blue.svg)](https://www.python.org/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+
 **Contrastive audio-visual alignment, with a dependency-light core.**
 
 `avalign` is a toolkit for learning and evaluating aligned audio and video
