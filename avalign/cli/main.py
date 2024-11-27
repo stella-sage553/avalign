@@ -18,9 +18,7 @@ def build_parser() -> argparse.ArgumentParser:
         prog="avalign",
         description="Contrastive audio-visual alignment toolkit.",
     )
-    parser.add_argument(
-        "--version", action="version", version=f"avalign {__version__}"
-    )
+    parser.add_argument("--version", action="version", version=f"avalign {__version__}")
     subparsers = parser.add_subparsers(dest="command", metavar="<command>")
 
     from avalign.cli import embed, eval, prep, train

@@ -47,9 +47,7 @@ def run(args: argparse.Namespace) -> int:
 
     generator = torch.Generator().manual_seed(args.seed)
     for step in range(args.steps):
-        audio = torch.randn(
-            args.batch_size, 1, args.n_mels, args.frames, generator=generator
-        )
+        audio = torch.randn(args.batch_size, 1, args.n_mels, args.frames, generator=generator)
         video = torch.randn(args.batch_size, 3, 4, 16, 16, generator=generator)
         loss = trainer.step(audio, video)
         if step % 10 == 0 or step == args.steps - 1:

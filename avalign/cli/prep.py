@@ -28,9 +28,7 @@ def run(args: argparse.Namespace) -> int:
     for audio_path in sorted(audio_dir.glob(f"*{args.audio_ext}")):
         video_path = video_dir / f"{audio_path.stem}{args.video_ext}"
         if video_path.exists():
-            pairs.append(
-                AVPair(id=audio_path.stem, audio=str(audio_path), video=str(video_path))
-            )
+            pairs.append(AVPair(id=audio_path.stem, audio=str(audio_path), video=str(video_path)))
 
     validate_manifest(pairs)
     write_manifest(pairs, args.out)

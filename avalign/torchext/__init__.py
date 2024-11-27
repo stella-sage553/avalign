@@ -33,8 +33,7 @@ __all__ = [
 def _require_torch() -> None:
     if not _HAS_TORCH:
         raise ImportError(
-            "avalign.torchext requires PyTorch. "
-            "Install it with: pip install 'avalign[torch]'"
+            "avalign.torchext requires PyTorch. Install it with: pip install 'avalign[torch]'"
         )
 
 
