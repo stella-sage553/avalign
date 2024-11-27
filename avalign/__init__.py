@@ -17,7 +17,7 @@ from avalign.losses import (
 )
 from avalign.metrics import alignment_accuracy, recall_at_k, retrieval_report
 
-__version__ = "0.0.1"
+__version__ = "0.1.0"
 
 __all__ = [
     "__version__",

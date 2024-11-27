@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "avalign"
-version = "0.0.1"
+version = "0.1.0"
 description = "Contrastive audio-video alignment toolkit"
 readme = "README.md"
 requires-python = ">=3.9"
