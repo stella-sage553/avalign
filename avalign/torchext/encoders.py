@@ -5,7 +5,7 @@ from __future__ import annotations
 import torch
 from torch import nn
 
-__all__ = ["AudioEncoder", "VideoEncoder"]
+__all__ = ["AudioEncoder", "VideoEncoder", "ProjectionHead"]
 
 
 class AudioEncoder(nn.Module):
@@ -59,3 +59,19 @@ class VideoEncoder(nn.Module):
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         h = self.features(x).flatten(1)
         return self.fc(h)
+
+
+class ProjectionHead(nn.Module):
+    """MLP head mapping encoder features into the shared, L2-normalised space."""
+
+    def __init__(self, in_dim: int, embed_dim: int, hidden_dim: int | None = None) -> None:
+        super().__init__()
+        hidden_dim = hidden_dim or in_dim
+        self.net = nn.Sequential(
+            nn.Linear(in_dim, hidden_dim),
+            nn.ReLU(inplace=True),
+            nn.Linear(hidden_dim, embed_dim),
+        )
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return nn.functional.normalize(self.net(x), dim=-1)
