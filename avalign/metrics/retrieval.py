@@ -11,7 +11,15 @@ from collections.abc import Iterable
 
 import numpy as np
 
-__all__ = ["recall_at_k", "median_rank", "mean_rank", "mrr"]
+from avalign.losses.functional import cosine_similarity_matrix
+
+__all__ = [
+    "recall_at_k",
+    "median_rank",
+    "mean_rank",
+    "mrr",
+    "retrieval_report",
+]
 
 
 def _rank_of(sim_row: np.ndarray, i: int) -> int:
@@ -54,3 +62,27 @@ def mrr(sim: np.ndarray) -> float:
     sim = np.asarray(sim, dtype=np.float64)
     ranks = [_rank_of(sim[i], i) for i in range(sim.shape[0])]
     return float(np.mean([1.0 / r for r in ranks]))
+
+
+def _direction_report(sim: np.ndarray, ks: Iterable[int]) -> dict[str, object]:
+    return {
+        "recall": recall_at_k(sim, ks),
+        "median_rank": median_rank(sim),
+        "mrr": mrr(sim),
+    }
+
+
+def retrieval_report(
+    audio: np.ndarray, video: np.ndarray, ks: Iterable[int] = (1, 5, 10)
+) -> dict[str, dict[str, object]]:
+    """Bidirectional retrieval report from paired embeddings.
+
+    Returns metrics for both ``audio_to_video`` (audio queries video) and
+    ``video_to_audio`` directions.
+    """
+    ks = list(ks)
+    sim = cosine_similarity_matrix(audio, video)
+    return {
+        "audio_to_video": _direction_report(sim, ks),
+        "video_to_audio": _direction_report(sim.T, ks),
+    }
