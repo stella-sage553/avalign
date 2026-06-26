@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import numpy as np
 
-__all__ = ["softmax", "log_softmax"]
+__all__ = ["softmax", "log_softmax", "l2_normalize"]
 
 
 def softmax(x: np.ndarray, axis: int = -1) -> np.ndarray:
@@ -24,3 +24,10 @@ def log_softmax(x: np.ndarray, axis: int = -1) -> np.ndarray:
     x = np.asarray(x, dtype=np.float64)
     x = x - np.max(x, axis=axis, keepdims=True)
     return x - np.log(np.sum(np.exp(x), axis=axis, keepdims=True))
+
+
+def l2_normalize(x: np.ndarray, axis: int = -1) -> np.ndarray:
+    """Scale entries along ``axis`` to unit L2 norm."""
+    x = np.asarray(x, dtype=np.float64)
+    norm = np.sqrt(np.sum(x * x, axis=axis, keepdims=True))
+    return x / norm
