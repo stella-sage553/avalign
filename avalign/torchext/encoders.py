@@ -44,6 +44,7 @@ class VideoEncoder(nn.Module):
 
     def __init__(self, hidden_dim: int = 256, in_channels: int = 3) -> None:
         super().__init__()
+        # TODO: allow swapping in a pretrained backbone (e.g. r3d_18) here.
         self.features = nn.Sequential(
             nn.Conv3d(in_channels, 32, kernel_size=3, padding=1),
             nn.BatchNorm3d(32),
