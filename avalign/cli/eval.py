@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 
 import numpy as np
 
@@ -21,8 +22,12 @@ def add_parser(subparsers: argparse._SubParsersAction) -> None:
 
 
 def run(args: argparse.Namespace) -> int:
-    audio = np.load(args.audio_emb)
-    video = np.load(args.video_emb)
+    try:
+        audio = np.load(args.audio_emb)
+        video = np.load(args.video_emb)
+    except FileNotFoundError as exc:
+        print(f"error: embedding file not found: {exc.filename}", file=sys.stderr)
+        return 2
     ks = tuple(int(x) for x in args.ks.split(","))
     report = retrieval_report(audio, video, ks=ks)
     print(json.dumps(report, indent=2))
