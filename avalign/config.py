@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+import json
+from dataclasses import asdict, dataclass, field
+from pathlib import Path
+from typing import Any
 
 
 @dataclass
@@ -63,3 +66,25 @@ class Config:
     audio: AudioConfig = field(default_factory=AudioConfig)
     model: ModelConfig = field(default_factory=ModelConfig)
     train: TrainConfig = field(default_factory=TrainConfig)
+
+    def to_dict(self) -> dict[str, Any]:
+        """Return a plain nested-dict representation."""
+        return asdict(self)
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> Config:
+        """Build a :class:`Config` from a nested dict (missing keys default)."""
+        return cls(
+            audio=AudioConfig(**data.get("audio", {})),
+            model=ModelConfig(**data.get("model", {})),
+            train=TrainConfig(**data.get("train", {})),
+        )
+
+    def save(self, path: str | Path) -> None:
+        """Serialise the config to a JSON file."""
+        Path(path).write_text(json.dumps(self.to_dict(), indent=2) + "\n")
+
+    @classmethod
+    def load(cls, path: str | Path) -> Config:
+        """Load a config from a JSON file written by :meth:`save`."""
+        return cls.from_dict(json.loads(Path(path).read_text()))
