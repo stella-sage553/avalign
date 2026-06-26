@@ -37,7 +37,7 @@ def recall_at_k(sim: np.ndarray, ks: Iterable[int] = (1, 5, 10)) -> dict[int, fl
     """Recall@k for matched-pair retrieval, returned as ``{k: recall}``."""
     ranks = _ranks(sim)
     n = len(ranks)
-    return {k: float(np.mean(ranks <= k)) for k in ks} if n else {k: 0.0 for k in ks}
+    return {k: float(np.mean(ranks <= k)) for k in ks} if n else dict.fromkeys(ks, 0.0)
 
 
 def median_rank(sim: np.ndarray) -> float:
