@@ -26,11 +26,15 @@ def log_softmax(x: np.ndarray, axis: int = -1) -> np.ndarray:
     return x - np.log(np.sum(np.exp(x), axis=axis, keepdims=True))
 
 
-def l2_normalize(x: np.ndarray, axis: int = -1) -> np.ndarray:
-    """Scale entries along ``axis`` to unit L2 norm."""
+def l2_normalize(x: np.ndarray, axis: int = -1, eps: float = 1e-12) -> np.ndarray:
+    """Scale entries along ``axis`` to unit L2 norm.
+
+    ``eps`` floors the denominator so all-zero rows map to zeros instead of
+    producing NaNs.
+    """
     x = np.asarray(x, dtype=np.float64)
     norm = np.sqrt(np.sum(x * x, axis=axis, keepdims=True))
-    return x / norm
+    return x / np.maximum(norm, eps)
 
 
 def cosine_similarity_matrix(a: np.ndarray, b: np.ndarray) -> np.ndarray:
