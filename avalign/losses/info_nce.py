@@ -23,6 +23,18 @@ def _nce_from_logits(logits: np.ndarray, axis: int) -> float:
     return float(-np.mean(log_softmax(logits, axis=axis)[idx, idx]))
 
 
+def _validate(audio: np.ndarray, video: np.ndarray, temperature: float) -> None:
+    if temperature <= 0:
+        raise ValueError(f"temperature must be > 0, got {temperature}")
+    if audio.ndim != 2 or video.ndim != 2:
+        raise ValueError("audio and video embeddings must be 2-D (n, d)")
+    if audio.shape[0] != video.shape[0]:
+        raise ValueError(
+            f"batch size mismatch: audio has {audio.shape[0]} rows, "
+            f"video has {video.shape[0]}"
+        )
+
+
 def info_nce(audio: np.ndarray, video: np.ndarray, temperature: float = 0.07) -> float:
     """One-directional InfoNCE matching each audio row to its paired video row.
 
@@ -35,6 +47,9 @@ def info_nce(audio: np.ndarray, video: np.ndarray, temperature: float = 0.07) ->
     Returns:
         The mean negative log-likelihood of the positive pairs.
     """
+    audio = np.asarray(audio)
+    video = np.asarray(video)
+    _validate(audio, video, temperature)
     logits = cosine_similarity_matrix(audio, video) / temperature
     return _nce_from_logits(logits, axis=1)
 
@@ -43,5 +58,8 @@ def symmetric_info_nce(
     audio: np.ndarray, video: np.ndarray, temperature: float = 0.07
 ) -> float:
     """Symmetric (CLIP-style) InfoNCE averaging both retrieval directions."""
+    audio = np.asarray(audio)
+    video = np.asarray(video)
+    _validate(audio, video, temperature)
     logits = cosine_similarity_matrix(audio, video) / temperature
     return 0.5 * (_nce_from_logits(logits, axis=1) + _nce_from_logits(logits, axis=0))
