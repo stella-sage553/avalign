@@ -38,9 +38,7 @@ def test_prep_then_eval(tmp_path, capsys):
     video_emb = tmp_path / "v.npy"
     np.save(audio_emb, np.eye(4))
     np.save(video_emb, np.eye(4))
-    rc = main(
-        ["eval", "--audio-emb", str(audio_emb), "--video-emb", str(video_emb), "--ks", "1,2"]
-    )
+    rc = main(["eval", "--audio-emb", str(audio_emb), "--video-emb", str(video_emb), "--ks", "1,2"])
     assert rc == 0
     assert "audio_to_video" in capsys.readouterr().out
 
